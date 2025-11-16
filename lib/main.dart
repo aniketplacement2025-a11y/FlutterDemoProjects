@@ -18,10 +18,16 @@ void main() async {
 
   // Run heavy inititalization in a separate isolate or use Future.delayed
   Future.delayed(Duration.zero, () async {
-    // Android Initialization
+    // Android Initialization With CUSTOM icon
     AndroidInitializationSettings androidSettings =
-    AndroidInitializationSettings('@mipmap/ic_launcher');
+    AndroidInitializationSettings('custom_logo');
+       // Use Your custom PNG name without extension
+
+    /* INSTEAD OF
+      AndroidInitializationSettings androidSettings =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
        // Use your app icon
+    */
 
     // iOS initialization (if needed)
     DarwinInitializationSettings iosSettings =
@@ -42,7 +48,7 @@ void main() async {
     bool? initialized = await notificationPlugin.initialize(
         initalizationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse response){
-          print('Notification tapped!');
+          print('Notification tapped! Payload: ${response.payload}');
       }
     );
 

@@ -11,7 +11,7 @@ class HomeScreen extends StatefulWidget{
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  void showNotification() async{
+  void showBasicNotification() async{
     AndroidNotificationDetails androidDetails = 
         AndroidNotificationDetails(
             "demo-notification-aniket",
@@ -74,24 +74,179 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // NEW : Custom Notification with Images
+  void showCustomNotification() async {
+    try {
+      // For Android - Using BigPictureStyle for custom layout
+      const AndroidNotificationDetails androidDetails =
+          AndroidNotificationDetails(
+            "custom-notification-channel",
+            "Custom Notifications",
+            channelDescription: 'Channel for custom styled notifications',
+            priority: Priority.high,
+            importance: Importance.high,
+            playSound: true,
+            enableVibration: true,
+            visibility: NotificationVisibility.public,
+            styleInformation: BigPictureStyleInformation(
+              // Large Image on the right side
+              DrawableResourceAndroidBitmap('right_image'), // Your custom PNG
+              largeIcon: DrawableResourceAndroidBitmap('custom_logo'),
+              // Small icon on left
+              contentTitle: 'Custom Notification Title', // Custom title
+              summaryText: 'This is a detailed description with custom styling!',
+              // Detailed description
+              htmlFormatContentTitle: true,
+            ),
+          );
+
+      // For iOS
+      const DarwinNotificationDetails iosDetails =
+          DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+            attachments: <DarwinNotificationAttachment>[
+              // You can add image attachments for iOS too
+            ],
+          );
+
+      const NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: iosDetails,
+      );
+
+      await notificationPlugin.show(
+          1, // Different ID
+          'Premium Update Available!',
+          'Upgrade now to unlock exclusive features and enhanced performance!',
+          // Body
+          notificationDetails,
+          payload: 'custom_notification' // Optional payload
+      );
+
+      print("Custom notification shown successfully!");
+    } catch(e){
+      print('Error showing custom notification: $e');
+    }
+  }
+
+  // NEW: Notification with Indox Style (Multiple lines)
+  void showIndoxStyleNotification() async {
+    try {
+      final List<String> lines = [
+        'New message from John',
+        'Meeting reminder at 3 PM',
+        'Your order has been shipped',
+        'Special offer just for u!'
+      ];
+
+      final AndroidNotificationDetails androidDetails =
+       AndroidNotificationDetails(
+       "indox-notification-channel",
+       "Indox Notifications",
+       channelDescription: 'Channel for inbox style notifications',
+       priority: Priority.high,
+       playSound: true,
+       styleInformation: InboxStyleInformation(
+           lines,
+           contentTitle: 'You have ${lines.length} new updates',
+           summaryText: 'Multiple updates waiting',
+           htmlFormatLines: true,
+        ),
+       );
+
+      final NotificationDetails notificationDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: DarwinNotificationDetails(
+          presentSound: true,
+          presentBadge: true,
+          presentAlert: true,
+        ),
+      );
+
+      await notificationPlugin.show(
+          2,
+          'Multiple Updates',
+          'You have several new notifications',
+          notificationDetails
+      );
+      print("Indox style notification shown successfully!");
+    } catch(e){
+      print('Error showing indox notification: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        title: Text('Local Notifications Demo'),
+        // title: Text('Local Notifications Demo'),
+        title: Text('Advanced Notifications Demo'),
+        backgroundColor: Colors.deepPurple,
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: showNotification,
-          child: Icon(Icons.notification_add),
-      ),  // Floating Action Button
+      // floatingActionButton: FloatingActionButton(
+      //     onPressed: showNotification,
+      //     child: Icon(Icons.notification_add),
+      // ),  // Floating Action Button
     body: SafeArea(
-       child: Center(
-         child: Text(
-           'PRESS THE BUTTON TO SHOW NOTIFICATION',
-           style: TextStyle(fontSize: 18),
-         ),
+     //   child: Center(
+     //     child: Text(
+     //       'PRESS THE BUTTON TO SHOW NOTIFICATION',
+     //       style: TextStyle(fontSize: 18),
+     //     ),
+     //  ),
+     // ), // Safe Area
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          //Basic Notification Button
+          ElevatedButton.icon(
+              onPressed: showBasicNotification,
+              icon: Icon(Icons.notifications),
+              label: Text('Basic Notification'),
+              style: ElevatedButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+          ),
+          SizedBox(height: 20),
+
+          //Custom Notification Button
+          ElevatedButton.icon(
+              onPressed: showCustomNotification,
+              icon: Icon(Icons.photo_library,color: Colors.white),
+              label: Text('Custom Image Notification', style: TextStyle(
+                color: Colors.white
+              )),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepPurple,
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+          ),
+
+          // Inbox Style Notification Button
+          ElevatedButton.icon(
+              onPressed: showIndoxStyleNotification,
+              icon: Icon(Icons.inbox, color: Colors.white),
+              label: Text('Inbox Style Notification', style: TextStyle(
+                color: Colors.white
+              )),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  padding: EdgeInsets.symmetric(horizontal: 30,vertical: 15),
+              ),
+          q),
+
+          SizedBox(height: 40),
+          Text(
+            'Choose Notification Style',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
-     ), // Safe Area
-    ); // Scaffold
+     ),
+    );// Scaffold
   }
 }
