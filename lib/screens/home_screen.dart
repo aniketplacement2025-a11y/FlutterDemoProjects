@@ -235,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundColor: Colors.orange,
                   padding: EdgeInsets.symmetric(horizontal: 30,vertical: 15),
               ),
-          q),
+          ),
 
           SizedBox(height: 40),
           Text(
